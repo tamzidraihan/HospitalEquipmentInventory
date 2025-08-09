@@ -1,0 +1,80 @@
+﻿@model List<InvWebApp.Models.User>
+
+@{
+    ViewData["Title"] = "Manage Roles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Breadcrumb -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-start">
+            <div class="page-title">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-end">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="/">Dashboard</a></li>
+                    <li>@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page Content -->
+<div class="container-fluid">
+    <div class="container text-capitalise">
+        <h2 class="special-heading">Manage User Roles</h2>
+        <p>Role control panel</p>
+    </div>
+    <div class="col-lg-12 col-md-12 p-1">
+        <div class="card">
+            <div class="card-header">
+                <strong class="card-title mb-3">User Role Management</strong>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>UserName</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <form asp-action="UpdateRole" method="post" class="d-flex align-items-center">
+                                    <td>@user.UserName</td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <select name="newRole" class="form-select">
+                                            @foreach (var role in new[] { "User", "Admin" })
+                                            {
+                                                var isSelected = role == user.Role ? "selected" : "";
+                                                @:<option value="@role" @isSelected>@role</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa-solid fa-rotate"></i>&nbsp;Update
+                                        </button>
+                                    </td>
+                                </form>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
