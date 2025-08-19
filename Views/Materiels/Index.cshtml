@@ -4,7 +4,6 @@
     ViewData["Title"] = "Materiel";
 }
 
-
 <div class="breadcrumbs">
     <div class="col-sm-4">
         <div class="page-header float-start">
@@ -25,49 +24,40 @@
     </div>
 </div>
 
-
 <div class="container-fluid">
     <div class="container text-capitalise">
         <h2 class="special-heading">materiel</h2>
         <p>materiel List</p>
     </div>
+
     <div class="col-lg-12 col-md-12 p-1">
         <a class="btn btn-primary mb-3" asp-action="Create">Create New</a>
+
         <div class="card">
             <div class="card-header">
                 <strong class="card-title mb-3">Materiel</strong>
             </div>
+
             <div class="card-body">
-                @if (Model != null)
+                @if (Model != null && Model.Any())
                 {
-
-
                     <table class="table" id="myDatatable">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>
-                                    Materiel Name
-                                </th>
-                                <th>
-                                    Created Date
-                                </th>
-                                <th>
-                                    Serial Number
-                                </th>
-                                <th>
-                                    Inventory Number
-                                </th>
-                                <th>Quantity</th>
-                                <th>
-                                    Categorie
-                                </th>
-                                <th>
-                                    Service
-                                </th>
-                                <th>
-                                    Group
-                                </th>
+                                <th>Materiel Name</th>
+                                <th>Kind</th>
+                                <th>Category</th>
+                                <th>Service</th>
+                                <th>Group</th>
+                                <th>UoM</th>
+                                <th class="text-end">Unit Cost</th>
+                                <th class="text-end">Reorder Pt.</th>
+                                <th class="text-end">Reorder Qty</th>
+                                <th>Serial Number</th>
+                                <th>Inventory Number</th>
+                                <th>Equip. Status</th>
+                                <th>Created Date</th>
                                 <th>Owner</th>
                                 <th></th>
                                 <th></th>
@@ -78,35 +68,43 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                                    <td>@item.Id</td>
                                     <td>
-                                        <a class="table-name-a" href="/Materiels/Details/@item.Id">@Html.DisplayFor(modelItem => item.MaterielName)</a>
+                                        <a class="table-name-a" href="/Materiels/Details/@item.Id">
+                                            @item.MaterielName
+                                        </a>
+                                    </td>
+                                    <td>@item.Kind.ToString()</td>
+                                    <td>@(item.Categorie?.CategorieName ?? "-")</td>
+                                    <td>@(item.Service?.ServiceName ?? "-")</td>
+                                    <td>@(item.serviceGroup?.GroupName ?? "-")</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Uom) ? "-" : item.Uom)</td>
+                                    <td class="text-end">@((item.UnitCost ?? 0).ToString("0.##"))</td>
+                                    <td class="text-end">@((item.ReorderPoint ?? 0))</td>
+                                    <td class="text-end">@((item.ReorderQuantity ?? 0))</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.SerialNumber) ? "-" : item.SerialNumber)</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.InventoryNumber) ? "-" : item.InventoryNumber)</td>
+                                    <td>
+                                        @((item.Status.HasValue) ? item.Status.Value.ToString() : "-")
+                                    </td>
+                                    <td>@item.CreatedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.MaterielOwner) ? "-" : item.MaterielOwner)</td>
+
+                                    <td>
+                                        <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.Id">
+                                            <i class="fa-solid fa-pen-to-square"></i>&nbsp;Edit
+                                        </a>
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.CreatedDate)
+                                        <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">
+                                            <i class="fa-solid fa-circle-info"></i>&nbsp;Details
+                                        </a>
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.SerialNumber)
+                                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                            <i class="fa-solid fa-trash"></i>&nbsp;Delete
+                                        </a>
                                     </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.InventoryNumber)
-                                    </td>
-                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Categorie.CategorieName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Service.ServiceName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.serviceGroup.GroupName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.MaterielOwner)
-                                    </td>
-                                    <td><a class="btn btn-success" asp-action="Edit" asp-route-id="@item.Id"><i class="fa-solid fa-pen-to-square"></i>&nbsp;Edit</a> </td>
-                                    <td> <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-circle-info"></i>&nbsp;Details</a></td>
-                                    <td> <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-trash"></i>&nbsp;Delete</a></td>
                                 </tr>
                             }
                         </tbody>
@@ -114,10 +112,9 @@
                 }
                 else
                 {
-                    <p>no data</p>
+                    <p>No data</p>
                 }
             </div>
         </div>
     </div>
-
 </div>

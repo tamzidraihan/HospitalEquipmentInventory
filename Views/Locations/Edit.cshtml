@@ -1,0 +1,20 @@
+﻿@model InvWebApp.Models.Location
+@{
+    ViewData["Title"] = "Edit Location";
+}
+<div class="card">
+    <div class="card-header"><h5 class="mb-0">Edit Location</h5></div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post" class="row g-3">
+            <input type="hidden" asp-for="Id" />
+            <div class="col-md-6">
+                <label class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
+            <div class="col-12">
+                <button class="btn btn-success">Save</button>
+                <a asp-action="Index" class="btn btn-light">Back</a>
+            </div>
+        </form>
+    </div>
+</div>

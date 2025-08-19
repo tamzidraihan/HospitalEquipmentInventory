@@ -3,6 +3,7 @@ using System;
 using InvWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819041548_Inventory_MinimalCore")]
+    partial class InventoryMinimalCore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,18 +201,12 @@ namespace InvWebApp.Migrations
                     b.Property<int>("Kind")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastServiceDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("MaterielName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("MaterielOwner")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("NextServiceDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -332,52 +329,6 @@ namespace InvWebApp.Migrations
                             Role = "Admin",
                             UserName = "admin"
                         });
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.WorkOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("AssignedTo")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("CompletedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("MaterielId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("OpenDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ResolutionNote")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MaterielId");
-
-                    b.ToTable("WorkOrders");
                 });
 
             modelBuilder.Entity("InvWebApp.Models.Categorie", b =>
@@ -514,17 +465,6 @@ namespace InvWebApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.WorkOrder", b =>
-                {
-                    b.HasOne("InvWebApp.Models.Materiel", "Materiel")
-                        .WithMany()
-                        .HasForeignKey("MaterielId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Materiel");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,6 +3,7 @@ using System;
 using InvWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819035257_Materiel_MinimalUpgrade")]
+    partial class MaterielMinimalUpgrade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,117 +40,6 @@ namespace InvWebApp.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.InventoryBatch", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("BatchNumber")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("InventoryStockId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InventoryStockId");
-
-                    b.ToTable("InventoryBatches");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.InventoryMovement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("BatchId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int?>("FromLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaterielId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PerformedByUserName")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("ToLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BatchId");
-
-                    b.HasIndex("FromLocationId");
-
-                    b.HasIndex("MaterielId");
-
-                    b.HasIndex("ToLocationId");
-
-                    b.ToTable("InventoryMovements");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.InventoryStock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaterielId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("MaterielId", "LocationId")
-                        .IsUnique();
-
-                    b.ToTable("InventoryStocks");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.Location", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("InvWebApp.Models.LogList", b =>
@@ -198,18 +90,12 @@ namespace InvWebApp.Migrations
                     b.Property<int>("Kind")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastServiceDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("MaterielName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("MaterielOwner")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("NextServiceDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -334,52 +220,6 @@ namespace InvWebApp.Migrations
                         });
                 });
 
-            modelBuilder.Entity("InvWebApp.Models.WorkOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("AssignedTo")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("CompletedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("MaterielId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("OpenDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ResolutionNote")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MaterielId");
-
-                    b.ToTable("WorkOrders");
-                });
-
             modelBuilder.Entity("InvWebApp.Models.Categorie", b =>
                 {
                     b.HasOne("InvWebApp.Models.User", "User")
@@ -389,67 +229,6 @@ namespace InvWebApp.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.InventoryBatch", b =>
-                {
-                    b.HasOne("InvWebApp.Models.InventoryStock", "InventoryStock")
-                        .WithMany()
-                        .HasForeignKey("InventoryStockId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("InventoryStock");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.InventoryMovement", b =>
-                {
-                    b.HasOne("InvWebApp.Models.InventoryBatch", "Batch")
-                        .WithMany()
-                        .HasForeignKey("BatchId");
-
-                    b.HasOne("InvWebApp.Models.Location", "FromLocation")
-                        .WithMany()
-                        .HasForeignKey("FromLocationId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("InvWebApp.Models.Materiel", "Materiel")
-                        .WithMany()
-                        .HasForeignKey("MaterielId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InvWebApp.Models.Location", "ToLocation")
-                        .WithMany()
-                        .HasForeignKey("ToLocationId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Batch");
-
-                    b.Navigation("FromLocation");
-
-                    b.Navigation("Materiel");
-
-                    b.Navigation("ToLocation");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.InventoryStock", b =>
-                {
-                    b.HasOne("InvWebApp.Models.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InvWebApp.Models.Materiel", "Materiel")
-                        .WithMany()
-                        .HasForeignKey("MaterielId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-
-                    b.Navigation("Materiel");
                 });
 
             modelBuilder.Entity("InvWebApp.Models.LogList", b =>
@@ -514,17 +293,6 @@ namespace InvWebApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("InvWebApp.Models.WorkOrder", b =>
-                {
-                    b.HasOne("InvWebApp.Models.Materiel", "Materiel")
-                        .WithMany()
-                        .HasForeignKey("MaterielId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Materiel");
                 });
 #pragma warning restore 612, 618
         }

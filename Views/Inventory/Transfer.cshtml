@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Transfer";
+    var materiels = (IEnumerable<InvWebApp.Models.Materiel>)ViewBag.Materiels;
+    var locations = (IEnumerable<InvWebApp.Models.Location>)ViewBag.Locations;
+}
+<div class="card">
+    <div class="card-header"><h5 class="mb-0">Transfer Stock</h5></div>
+    <div class="card-body">
+        <form asp-action="Transfer" method="post" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Materiel</label>
+                <select class="form-control" name="materielId" required>
+                    @foreach (var m in materiels)
+                    {
+                        <option value="@m.Id">@m.MaterielName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">From</label>
+                <select class="form-control" name="fromLocationId" required>
+                    @foreach (var l in locations)
+                    {
+                        <option value="@l.Id">@l.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">To</label>
+                <select class="form-control" name="toLocationId" required>
+                    @foreach (var l in locations)
+                    {
+                        <option value="@l.Id">@l.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Quantity</label>
+                <input type="number" min="1" class="form-control" name="quantity" required />
+            </div>
+            <div class="col-12">
+                <button class="btn btn-info">Transfer</button>
+                <a asp-action="Index" class="btn btn-light">Back</a>
+            </div>
+        </form>
+    </div>
+</div>

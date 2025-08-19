@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Receive";
+    var materiels = (IEnumerable<InvWebApp.Models.Materiel>)ViewBag.Materiels;
+    var locations = (IEnumerable<InvWebApp.Models.Location>)ViewBag.Locations;
+}
+<div class="card">
+    <div class="card-header"><h5 class="mb-0">Receive Stock</h5></div>
+    <div class="card-body">
+        <form asp-action="Receive" method="post" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Materiel</label>
+                <select class="form-control" name="materielId" required>
+                    @foreach (var m in materiels)
+                    {
+                        <option value="@m.Id">@m.MaterielName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Location</label>
+                <select class="form-control" name="locationId" required>
+                    @foreach (var l in locations)
+                    {
+                        <option value="@l.Id">@l.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Quantity</label>
+                <input type="number" min="1" class="form-control" name="quantity" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Batch No (optional)</label>
+                <input class="form-control" name="batchNo" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Expiry (optional)</label>
+                <input type="date" class="form-control" name="expiry" />
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary">Receive</button>
+                <a asp-action="Index" class="btn btn-light">Back</a>
+            </div>
+        </form>
+    </div>
+</div>

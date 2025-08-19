@@ -1,0 +1,79 @@
+﻿@model InvWebApp.Models.WorkOrder
+@{
+    ViewData["Title"] = "Create Work Order";
+}
+<div class="breadcrumbs">
+    <!-- ... keep your breadcrumbs as-is ... -->
+</div>
+
+<div class="container-fluid">
+    <div class="row d-flex flex-column align-items-center">
+        <div class="col-md-6 col-sm-12">
+            <div class="card">
+                <div class="card-header"><strong class="card-title mb-3">New Work Order</strong></div>
+                <div class="card-body">
+
+                    <form asp-action="Create" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <!-- SHOW ANY SERVER-SIDE ERRORS -->
+                        <div asp-validation-summary="All" class="text-danger mb-2"></div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label">Materiel (equipment)</label>
+                                <select asp-for="MaterielId" class="form-control" asp-items="ViewBag.Materiels">
+                                    <option value="0">-- Select materiel --</option>
+                                </select>
+                                <span asp-validation-for="MaterielId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-8">
+                                <label class="form-label">Title</label>
+                                <input asp-for="Title" class="form-control" required />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Priority</label>
+                                <select asp-for="Priority" class="form-control">
+                                    <option value="1">Low</option>
+                                    <option value="2">Medium</option>
+                                    <option value="3">High</option>
+                                    <option value="4">Critical</option>
+                                </select>
+                                <span asp-validation-for="Priority" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-8">
+                                <label class="form-label">Assigned To (optional)</label>
+                                <input asp-for="AssignedTo" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Due Date (optional)</label>
+                                <input asp-for="DueDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <label class="form-label">Description</label>
+                                <textarea asp-for="Description" class="form-control"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
