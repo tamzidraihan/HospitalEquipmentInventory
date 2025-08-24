@@ -4,22 +4,30 @@ namespace InvWebApp.Models
 {
     public class DashboardData
     {
-        // Topline counts
+        // Existing properties
         public int MaterielCount { get; set; }
         public int CategoryCount { get; set; }
         public int ServiceCount { get; set; }
         public int UserCount { get; set; }
         public int LowStockCount { get; set; }
         public int OpenWorkOrdersCount { get; set; }
+        public int OperationalEquipmentCount { get; set; }
 
-        // Lists shown on cards/tables
-        public List<Materiel> MaterielList { get; set; } = new();
-        public List<Categorie> CategorieList { get; set; } = new();
-        public List<Service> ServiceList { get; set; } = new();
-        public List<LogList> _LogList { get; set; } = new();
+        public List<Materiel> MaterielList { get; set; }
+        public List<Categorie> CategorieList { get; set; }
+        public List<Service> ServiceList { get; set; }
+        public List<LowStockItem> LowStockTop { get; set; }
+        public List<WorkOrder> WorkOrdersTop { get; set; }
+        public List<WorkOrder> MyAssignedWorkOrders { get; set; }
+        public List<LogList> _LogList { get; set; }
 
-        // New sections
-        public List<Materiel> LowStockTop { get; set; } = new();
-        public List<WorkOrder> WorkOrdersTop { get; set; } = new();
+        // Add these classes if needed
+        public class LowStockItem
+        {
+            public string MaterielName { get; set; }
+            public int Quantity { get; set; }
+            public int? ReorderPoint { get; set; }
+            public string Location { get; set; }
+        }
     }
 }

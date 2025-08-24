@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace InvWebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Technician,Nurse")]
     public class MaterielsController : Controller
     {
         private readonly AppDbContext _context;

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvWebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,InventoryManager")]
     public class InventoryController : Controller
     {
         private readonly IInventoryService _svc;

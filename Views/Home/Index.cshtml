@@ -1,298 +1,498 @@
 ﻿@model InvWebApp.Models.DashboardData
+@using System.Security.Claims
 @{
-    ViewData["Title"] = "dashboard";
+    ViewData["Title"] = "Dashboard";
+    var userRoles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+    var isAdmin = userRoles.Contains("Admin");
+    var isTechnician = userRoles.Contains("Technician");
+    var isNurse = userRoles.Contains("Nurse");
+    var isInventoryManager = userRoles.Contains("InventoryManager");
 }
 
-<div class="breadcrumbs">
-    <div class="col-sm-4">
-        <div class="page-header float-start">
-            <div class="page-title"><h1>Dashboard</h1></div>
-        </div>
-    </div>
-    <div class="col-sm-8">
-        <div class="page-header float-end">
-            <div class="page-title">
-                <ol class="breadcrumb text-right"><li><a href="/">Dashboard</a></li></ol>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="text-gradient">Dashboard Overview</h1>
+                <p class="text-muted">Welcome back, @User.Identity.Name! Here's what's happening today.</p>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Start dashboard page -->
-<div class="container-fluid mt-3">
-
-    <!-- Top KPI cards -->
-    <div class="col-sm-12 mb-4">
-        <div class="card-group">
-
-            <div class="card col-md-6 no-padding bg-flat-color-1 d-flex flex-column text-light">
-                <div class="card-body justify-content-end float-end">
-                    <div class="h1 text-muted text-right mb-3"><i class="fa-solid fa-desktop text-light"></i></div>
-                    <div class="h4 mb-0"><span class="count fw-bold">@Model.MaterielCount</span></div>
-                    <small class="text-uppercase font-weight-bold">Materiel</small>
-                </div>
-            </div>
-
-            <div class="card col-md-6 no-padding bg-flat-color-2 text-light">
-                <div class="card-body">
-                    <div class="h1 text-muted text-right mb-3"><i class="fa-regular fa-folder-open text-light"></i></div>
-                    <div class="h4 mb-0"><span class="count fw-bold">@Model.CategoryCount</span></div>
-                    <small class="text-uppercase font-weight-bold">Categorie</small>
-                </div>
-            </div>
-
-            <div class="card col-md-6 no-padding bg-flat-color-3 text-light">
-                <div class="card-body">
-                    <div class="h1 text-muted text-right mb-3"><i class="fa-solid fa-hospital text-light"></i></div>
-                    <div class="h4 mb-0"><span class="count fw-bold">@Model.ServiceCount</span></div>
-                    <small class="text-uppercase font-weight-bold">Service</small>
-                </div>
-            </div>
-
-            <div class="card col-md-6 no-padding bg-flat-color-4 text-light">
-                <div class="card-body">
-                    <div class="h1 text-muted text-right mb-3"><i class="fa-solid fa-user text-light"></i></div>
-                    <div class="h4 mb-0"><span class="count fw-bold">@Model.UserCount</span></div>
-                    <small class="text-uppercase font-weight-bold">User</small>
+    <!-- Welcome Alert -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info shadow-lg">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-user-circle fa-2x me-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">Welcome, @User.Identity.Name!</h5>
+                        <p class="mb-0">
+                            @if (isAdmin)
+                            {
+                                <text>You have <strong>full administrative access</strong> to manage the entire system.</text>
+                            }
+                            else if (isTechnician)
+                            {
+                                <text>You have access to <strong>maintenance and equipment management</strong> functions.</text>
+                            }
+                            else if (isNurse)
+                            {
+                                <text>You can <strong>view equipment status and report issues</strong> as needed.</text>
+                            }
+                            else if (isInventoryManager)
+                            {
+                                <text>You manage <strong>inventory and stock control</strong> operations.</text>
+                            }
+                            else
+                            {
+                                <text>You have <strong>basic user access</strong> to the system.</text>
+                            }
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Rows of tables/cards -->
-    <div class="container-fluid">
-
-        <!-- NEW: Low Stock -->
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong class="card-title mb-3">Low Stock</strong>
-                    <span class="badge bg-danger">@Model.LowStockCount</span>
-                </div>
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <!-- Materiel Count -->
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card bg-flat-color-1 text-white shadow-lg">
                 <div class="card-body">
-                    @if (Model?.LowStockTop?.Any() == true)
-                    {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Materiel</th>
-                                    <th>Qty</th>
-                                    <th>Reorder Pt.</th>
-                                    <th>Service</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var m in Model.LowStockTop)
-                                {
-                                    <tr>
-                                        <td>@m.MaterielName</td>
-                                        <td>@m.Quantity</td>
-                                        <td>@(m.ReorderPoint ?? 0)</td>
-                                        <td>@m.Service?.ServiceName</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p>No items are at or below reorder point.</p>
-                    }
-                    <a href="/Materiels" class="btn btn-primary float-end"><i class="fa-solid fa-angle-right"></i>&nbsp; Go to Materiels</a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fw-bold mb-0">@Model.MaterielCount</h2>
+                            <p class="mb-0">Total Equipment</p>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fa-solid fa-desktop fa-2x"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- NEW: Recent Work Orders -->
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong class="card-title mb-3">Recent Work Orders</strong>
-                    <span class="badge bg-warning text-dark">@Model.OpenWorkOrdersCount open</span>
+        <!-- Category Count -->
+        @if (isAdmin || isInventoryManager || isTechnician)
+        {
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+                <div class="card bg-flat-color-2 text-white shadow-lg">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="fw-bold mb-0">@Model.CategoryCount</h2>
+                                <p class="mb-0">Categories</p>
+                            </div>
+                            <div class="icon-circle">
+                                <i class="fa-regular fa-folder-open fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        }
+
+        <!-- Service Count -->
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card bg-flat-color-3 text-white shadow-lg">
                 <div class="card-body">
-                    @if (Model?.WorkOrdersTop?.Any() == true)
-                    {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Materiel</th>
-                                    <th>Title</th>
-                                    <th>Priority</th>
-                                    <th>Status</th>
-                                    <th>Opened</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var w in Model.WorkOrdersTop)
-                                {
-                                    <tr>
-                                        <td>@w.Id</td>
-                                        <td>@w.Materiel?.MaterielName</td>
-                                        <td>@w.Title</td>
-                                        <td>@w.Priority</td>
-                                        <td>@w.Status</td>
-                                        <td>@w.OpenDate.ToString("yyyy-MM-dd")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p>No work orders yet.</p>
-                    }
-                    <a href="/WorkOrders" class="btn btn-primary float-end"><i class="fa-solid fa-angle-right"></i>&nbsp; Go to Maintenance</a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fw-bold mb-0">@Model.ServiceCount</h2>
+                            <p class="mb-0">Services</p>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fa-solid fa-hospital fa-2x"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Materiels (latest) -->
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="card">
-                <div class="card-header"><strong class="card-title mb-3">Materiels</strong></div>
+        <!-- User Count or Operational Equipment -->
+        @if (isAdmin)
+        {
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+                <div class="card bg-flat-color-4 text-white shadow-lg">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="fw-bold mb-0">@Model.UserCount</h2>
+                                <p class="mb-0">Users</p>
+                            </div>
+                            <div class="icon-circle">
+                                <i class="fa-solid fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+                <div class="card bg-flat-color-5 text-white shadow-lg">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="fw-bold mb-0">@Model.OperationalEquipmentCount</h2>
+                                <p class="mb-0">Operational</p>
+                            </div>
+                            <div class="icon-circle">
+                                <i class="fa-solid fa-check-circle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="row">
+        <!-- Low Stock Alert -->
+        @if (isAdmin || isInventoryManager || isTechnician)
+        {
+            <div class="col-xl-6 col-lg-12 mb-4">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fa-solid fa-exclamation-triangle text-warning me-2"></i>
+                            Low Stock Alerts
+                        </h6>
+                        <span class="badge bg-danger">@Model.LowStockCount items</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model?.LowStockTop?.Any() == true)
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Equipment</th>
+                                            <th>Current</th>
+                                            <th>Required</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var m in Model.LowStockTop)
+                                        {
+                                            <tr>
+                                                <td class="fw-semibold">@m.MaterielName</td>
+                                                <td>
+                                                    <span class="badge @(m.Quantity <= 0 ? "bg-danger" : "bg-warning text-dark")">
+                                                        @m.Quantity
+                                                    </span>
+                                                </td>
+                                                <td>@(m.ReorderPoint ?? 0)</td>
+                                                <td>
+                                                    <span class="badge @(m.Quantity <= 0 ? "bg-danger" : "bg-warning")">
+                                                        @(m.Quantity <= 0 ? "Critical" : "Low")
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="fa-solid fa-check-circle fa-3x text-success mb-3"></i>
+                                <p class="text-muted">All stock levels are adequate</p>
+                            </div>
+                        }
+                        @if (isAdmin || isInventoryManager)
+                        {
+                            <div class="text-end mt-3">
+                                <a href="/Inventory" class="btn btn-primary btn-sm">
+                                    <i class="fa-solid fa-boxes me-2"></i>Manage Inventory
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Maintenance Tasks -->
+        @if (isAdmin || isTechnician)
+        {
+            <div class="col-xl-6 col-lg-12 mb-4">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fa-solid fa-wrench text-primary me-2"></i>
+                            Maintenance Tasks
+                        </h6>
+                        <span class="badge bg-warning text-dark">@Model.OpenWorkOrdersCount open</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model?.WorkOrdersTop?.Any() == true)
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Task</th>
+                                            <th>Equipment</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var w in Model.WorkOrdersTop)
+                                        {
+                                            <tr>
+                                                <td class="fw-semibold">#@w.Id</td>
+                                                <td>@w.Materiel?.MaterielName</td>
+                                                <td>
+                                                    <span class="badge @GetPriorityBadge(w.Priority.ToString())">
+                                                        @w.Priority
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge @GetStatusBadge(w.Status.ToString())">
+                                                        @w.Status
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="fa-solid fa-clipboard-check fa-3x text-success mb-3"></i>
+                                <p class="text-muted">No pending maintenance tasks</p>
+                            </div>
+                        }
+                        <div class="text-end mt-3">
+                            <a href="/WorkOrders" class="btn btn-outline-primary btn-sm">
+                                <i class="fa-solid fa-list me-2"></i>View All Tasks
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Recent Equipment -->
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fa-solid fa-clock-rotate-left text-info me-2"></i>
+                        Recent Equipment
+                    </h6>
+                </div>
                 <div class="card-body">
                     @if (Model?.MaterielList?.Any() == true)
                     {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Materiel Name</th>
-                                    <th scope="col">Created Date</th>
-                                    <th scope="col">Categorie</th>
-                                    <th scope="col">Service</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.MaterielList)
-                                {
-                                    <tr>
-                                        <td>@item.Id</td>
-                                        <td>@item.MaterielName</td>
-                                        <td>@item.CreatedDate.ToString("yyyy-MM-dd")</td>
-                                        <td>@item.Categorie?.CategorieName</td>
-                                        <td>@item.Service?.ServiceName</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <div class="list-group list-group-flush">
+                            @foreach (var item in Model.MaterielList.Take(5))
+                            {
+                                <a href="/Materiels/Details/@item.Id" class="list-group-item list-group-item-action border-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-circle-sm bg-light me-3">
+                                            <i class="fa-solid fa-desktop text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-semibold">@item.MaterielName</h6>
+                                            <small class="text-muted">
+                                                @item.Categorie?.CategorieName • @item.Service?.ServiceName
+                                            </small>
+                                        </div>
+                                        <div class="text-end">
+                                            <small class="text-muted">@item.CreatedDate.ToString("MMM dd")</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            }
+                        </div>
                     }
                     else
                     {
-                        <p>No data available</p>
+                        <div class="text-center py-4">
+                            <i class="fa-solid fa-desktop fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No equipment found</p>
+                        </div>
                     }
-                    <a href="/Materiels" class="btn btn-primary float-end"><i class="fa-solid fa-angle-right"></i>&nbsp; See More</a>
+                    <div class="text-end mt-3">
+                        <a href="/Materiels" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-eye me-2"></i>View All Equipment
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Categories (latest) -->
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="card">
-                <div class="card-header"><strong class="card-title mb-3">Categories</strong></div>
-                <div class="card-body">
-                    @if (Model?.CategorieList?.Any() == true)
-                    {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Categorie Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.CategorieList)
-                                {
-                                    <tr>
-                                        <td>@item.Id</td>
-                                        <td>@item.CategorieName</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p>No data available</p>
-                    }
-                    <a href="/Categories" class="btn btn-primary float-end"><i class="fa-solid fa-angle-right"></i>&nbsp; See More</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Services (latest) -->
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="card">
-                <div class="card-header"><strong class="card-title mb-3">Services</strong></div>
-                <div class="card-body">
-                    @if (Model?.ServiceList?.Any() == true)
-                    {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Service Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.ServiceList)
-                                {
-                                    <tr>
-                                        <td>@item.Id</td>
-                                        <td>@item.ServiceName</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p>No data available</p>
-                    }
-                    <a href="/Services" class="btn btn-primary float-end"><i class="fa-solid fa-angle-right"></i>&nbsp; See More</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Logs -->
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="card">
-                <div class="card-header"><strong class="card-title mb-3">Log</strong></div>
-                <div class="card-body">
-                    @if (Model?._LogList?.Any() == true)
-                    {
-                        @foreach (var log in Model._LogList)
+        <!-- Recent Activity (Admin Only) -->
+        @if (isAdmin)
+        {
+            <div class="col-xl-6 col-lg-12 mb-4">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fa-solid fa-history text-dark me-2"></i>
+                            Recent Activity
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @if (Model?._LogList?.Any() == true)
                         {
-                            <div class="alert alert-@getColor(log.LogType)" role="alert">
-                                <strong>@log.User.UserName</strong> @Html.Raw(log.LogMessage)
-                                <span>@log.LogDate</span> !
+                            <div class="activity-timeline">
+                                @foreach (var log in Model._LogList.Take(5))
+                                {
+                                    <div class="activity-item">
+                                        <div class="activity-badge @getColor(log.LogType)"></div>
+                                        <div class="activity-content">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-semibold">@log.User.UserName</span>
+                                                <small class="text-muted">@log.LogDate.ToString("MMM dd HH:mm")</small>
+                                            </div>
+                                            <p class="mb-1 small">@Html.Raw(log.LogMessage)</p>
+                                            <span class="badge bg-@getColor(log.LogType)">@log.LogType</span>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         }
-                    }
-                    else
-                    {
-                        <p>No activity yet.</p>
-                    }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No recent activity</p>
+                            </div>
+                        }
+                        <div class="text-end mt-3">
+                            <a href="/LogList" class="btn btn-outline-dark btn-sm">
+                                <i class="fa-solid fa-scroll me-2"></i>View All Logs
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        
-
+        }
     </div>
 </div>
 
 @functions {
     private string getColor(string action)
     {
-        switch (action)
+        return action?.ToLower() switch
         {
-            case "insert": return "success";
-            case "edit": return "primary";
-            case "delete": return "danger";
-            default: return "secondary";
-        }
+            "insert" => "success",
+            "edit" => "primary",
+            "delete" => "danger",
+            "login" => "info",
+            "logout" => "warning",
+            _ => "secondary"
+        };
+    }
+
+    private string GetPriorityBadge(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "bg-danger",
+            "medium" => "bg-warning text-dark",
+            "low" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStatusBadge(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "open" => "bg-warning text-dark",
+            "inprogress" => "bg-primary",
+            "in progress" => "bg-primary",
+            "completed" => "bg-success",
+            "closed" => "bg-secondary",
+            _ => "bg-light text-dark"
+        };
     }
 }
+
+<style>
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-circle-sm {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .activity-timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .activity-item {
+        position: relative;
+        padding: 10px 0;
+        border-left: 2px solid #e9ecef;
+        margin-left: 15px;
+    }
+
+    .activity-badge {
+        position: absolute;
+        left: -30px;
+        top: 15px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+    }
+
+    .activity-content {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-left: 10px;
+    }
+
+    .activity-badge.success {
+        background: var(--success);
+    }
+
+    .activity-badge.primary {
+        background: var(--primary);
+    }
+
+    .activity-badge.danger {
+        background: var(--danger);
+    }
+
+    .activity-badge.info {
+        background: var(--accent);
+    }
+
+    .activity-badge.warning {
+        background: var(--warning);
+    }
+
+    .activity-badge.secondary {
+        background: #6c757d;
+    }
+</style>

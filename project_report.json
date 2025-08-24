@@ -1,0 +1,72 @@
+{
+  "Project": {
+    "Name": "InventoryManagementSystem",
+    "Description": "ASP.NET Core MVC Ecommerce Project",
+    "Domain": "E-Commerce",
+    "CreatedDate": "2025-08-24"
+  },
+  "TechnologyStack": {
+    "Backend": "ASP.NET Core MVC",
+    "Language": "C#",
+    "Database": "SQL Server",
+    "ORM": "Entity Framework Core",
+    "Frontend": [
+      "HTML",
+      "CSS",
+      "Bootstrap",
+      "JavaScript"
+    ]
+  },
+  "Controllers": [
+    "AdminController",
+    "CategoriesController",
+    "HomeController",
+    "InventoryController",
+    "LocationsController",
+    "LogListController",
+    "MaterielsApi",
+    "MaterielsController",
+    "ServiceGroupsController",
+    "ServicesController",
+    "UsersController",
+    "WorkOrdersController"
+  ],
+  "Models": [
+    "Categorie",
+    "DashboardData",
+    "EquipmentStatus",
+    "ErrorViewModel",
+    "InventoryBatch",
+    "InventoryMovement",
+    "InventoryStock",
+    "Location",
+    "LogList",
+    "Materiel",
+    "MaterielKind",
+    "MovementType",
+    "ProfileViewModel",
+    "RegisterViewModel",
+    "Role",
+    "Service",
+    "ServiceGroup",
+    "User",
+    "UserRole",
+    "WorkOrder",
+    "WorkOrderPriority",
+    "WorkOrderStatus"
+  ],
+  "Views": [
+    "Admin",
+    "Categories",
+    "Home",
+    "Inventory",
+    "Locations",
+    "LogList",
+    "Materiels",
+    "ServiceGroups",
+    "Services",
+    "Shared",
+    "Users",
+    "WorkOrders"
+  ]
+}

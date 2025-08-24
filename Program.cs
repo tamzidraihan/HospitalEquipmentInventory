@@ -23,45 +23,104 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-
     options.EnableDetailedErrors();
     options.EnableSensitiveDataLogging();
 });
 
-var app = builder.Build(); 
-
-// ---- Seed a couple of Locations ----
-using (var scope = app.Services.CreateScope())
+// Add session services
+builder.Services.AddSession(options =>
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (!db.Locations.Any())
-    {
-        db.Locations.AddRange(
-            new Location { Name = "Main Store" },
-            new Location { Name = "ICU Store" }
-        );
-        db.SaveChanges();
-    }
-}
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-// Pipeline
+var app = builder.Build();
+
+// ---- MIDDLEWARE PIPELINE ----
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
-// Routes — pick ONE default. Suggest Home/Index as default.
-// The LoginPath will redirect unauthenticated users to /Admin/Login automatically.
+// ---- DATABASE SEEDING (Moved after middleware but before endpoints) ----
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    try
+    {
+        // Ensure database is created and migrated
+        context.Database.EnsureCreated();
+
+        // Ensure roles exist first
+        if (!context.Roles.Any())
+        {
+            context.Roles.AddRange(
+                new Role { RoleName = "Admin" },
+                new Role { RoleName = "Nurse" },
+                new Role { RoleName = "Technician" }
+            );
+            context.SaveChanges();
+        }
+
+        // Ensure admin user exists
+        var adminUser = context.Users.FirstOrDefault(u => u.UserName == "admin");
+        if (adminUser == null)
+        {
+            // Create admin user if it doesn't exist
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword("admin123");
+            var user = new User
+            {
+                UserName = "admin",
+                Email = "admin@example.com",
+                Password = hashedPassword,
+                FullName = "Administrator",
+                PhoneNumber = "+1234567890"
+            };
+            context.Users.Add(user);
+            context.SaveChanges();
+
+            // Assign admin role - ensure the role exists
+            var adminRole = context.Roles.FirstOrDefault(r => r.RoleName == "Admin");
+            if (adminRole != null)
+            {
+                context.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = adminRole.Id });
+                context.SaveChanges();
+            }
+        }
+
+        // Seed Locations
+        if (!context.Locations.Any())
+        {
+            context.Locations.AddRange(
+                new Location { Name = "Main Store" },
+                new Location { Name = "ICU Store" }
+            );
+            context.SaveChanges();
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log the error but don't crash the application
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
+
+// Routes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// If you really want a route to Admin/Login as well, give it a different name:
 app.MapControllerRoute(
     name: "login",
     pattern: "auth",

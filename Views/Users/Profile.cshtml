@@ -1,0 +1,223 @@
+﻿@model ProfileViewModel
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="text-gradient">My Profile</h1>
+                <p class="text-muted">Manage your account information and preferences</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0 rounded-xl">
+                <!-- Card Header -->
+                <div class="card-header bg-white py-4 border-0">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle-lg bg-primary text-white me-4">
+                            <i class="fa-solid fa-user fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">Profile Information</h4>
+                            <p class="text-muted mb-0">Update your personal details and security settings</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-5">
+                    <!-- Status Message -->
+                    @if (TempData["StatusMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                            <i class="fa fa-check-circle me-2"></i>
+                            @TempData["StatusMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Profile" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Personal Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fa-solid fa-user-circle me-2"></i>Personal Information
+                                </h5>
+                            </div>
+
+                            <!-- Full Name -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FullName" class="form-label fw-semibold">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa fa-user text-primary"></i>
+                                    </span>
+                                    <input asp-for="FullName" class="form-control" placeholder="Enter your full name">
+                                </div>
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label fw-semibold">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa fa-envelope text-primary"></i>
+                                    </span>
+                                    <input asp-for="Email" class="form-control" placeholder="Enter your email">
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNumber" class="form-label fw-semibold">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa fa-phone text-primary"></i>
+                                    </span>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number">
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Role (Readonly) -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">System Role</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa fa-shield text-primary"></i>
+                                    </span>
+                                    <input class="form-control" value="@Model.Role" readonly>
+                                </div>
+                                <small class="text-muted">Your role in the system</small>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Password Change Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fa-solid fa-lock me-2"></i>Change Password
+                                </h5>
+                                <p class="text-muted mb-4">Leave these fields blank if you don't want to change your password</p>
+                            </div>
+
+                            <!-- Current Password -->
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="OldPassword" class="form-label fw-semibold">Current Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa fa-lock text-primary"></i>
+                                    </span>
+                                    <input asp-for="OldPassword" class="form-control" placeholder="Current password">
+                                </div>
+                                <span asp-validation-for="OldPassword" class="text-danger small"></span>
+                            </div>
+
+                            <!-- New Password -->
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NewPassword" class="form-label fw-semibold">New Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa fa-key text-primary"></i>
+                                    </span>
+                                    <input asp-for="NewPassword" class="form-control" placeholder="New password">
+                                </div>
+                                <span asp-validation-for="NewPassword" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label fw-semibold">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa fa-key text-primary"></i>
+                                    </span>
+                                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm new password">
+                                </div>
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex gap-3 justify-content-end">
+                                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fa fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fa fa-save me-2"></i>Update Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    .icon-circle-lg {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .rounded-xl {
+        border-radius: 20px !important;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .form-control {
+        border-left: 0;
+    }
+
+    .input-group-text {
+        border-right: 0;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+    .btn-outline-secondary {
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+</style>

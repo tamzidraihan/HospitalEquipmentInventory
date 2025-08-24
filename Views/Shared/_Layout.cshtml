@@ -1,124 +1,224 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - InventoryManagementSystem</title>
+    <title>@ViewData["Title"] - Hospital Inventory System</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
-    <link href="~/css/normalize.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="~/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="~/css/jquery.datatables.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/InventoryManagementSystem.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <aside id="left-panel" class="left-panel">
-        <nav class="navbar navbar-expand-sm navbar-default">
+    <div class="layout-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <nav class="navbar navbar-default">
+                <div class="navbar-brand">
+                    <i class="fa-solid fa-hospital fa-2x text-white"></i>
+                    <span class="ms-2 text-white fw-bold">MedInventory</span>
+                </div>
 
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="/"><img src="/images/logo2.png" alt="Logo"></a>
-            </div>
-
-            <div id="main-menu" class="main-menu collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li class="active">
-                        <a href="/"> <i class="fa-solid fa-gauge"></i> Dashboard </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Inventory" asp-action="Index">
-                            <i class="fa fa-archive"></i> <span>Inventory</span>
+                <ul class="sidebar-nav">
+                    <li class="nav-item @(Context.Request.Path == "/" ? "active" : "")">
+                        <a class="nav-link" href="/">
+                            <i class="fa-solid fa-gauge"></i>
+                            <span>Dashboard</span>
                         </a>
                     </li>
 
-                    <li>
-                        <a href="/Materiels"> <i class="fa-solid fa-desktop"></i> Materiels </a>
-                    </li>
-
-                    <li>
-                        <a href="/Categories"> <i class="fa-regular fa-folder-open"></i> Categories </a>
-                    </li>
-
-                    <li>
-                        <a href="/Services"> <i class="fa-solid fa-hospital"></i> Services </a>
-                    </li>
-                    <li>
-                        <a href="/ServiceGroups"> <i class="fa-solid fa-folder"></i> Group </a>
-                    </li>
-
-                    @if (User.IsInRole("Admin"))
+                    <!-- Inventory -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("InventoryManager") || User.IsInRole("Technician"))
                     {
-                        @* <li> *@
-                        @*     <a href="/Users"> <i class="fa-solid fa-user"></i> User </a> *@
-                        @* </li> *@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Inventory" asp-action="Index">
-                                <i class="fa fa-archive"></i> <span>Inventory</span>
+                                <i class="fa fa-archive"></i>
+                                <span>Inventory</span>
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="WorkOrders" asp-action="Index">
-                                <i class="fa fa-wrench"></i> <span>Maintenance</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Locations" asp-action="Index">
-                                <i class="fa fa-map-marker"></i> <span>Locations</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/Users/ManageRoles"> <i class="fa-solid fa-user-gear"></i> Manage Roles</a>
-                        </li>
-                        <li>
-                            <a href="/LogList"> <i class="fa-solid fa-server"></i> Logs </a>
                         </li>
                     }
 
-                    <li>
-                        <a asp-controller="Home" asp-action="LogOut"> <i class="fa-solid fa-right-from-bracket"></i> Logout </a>
+                    <!-- Materiels -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Materiels">
+                            <i class="fa-solid fa-desktop"></i>
+                            <span>Equipment</span>
+                        </a>
+                    </li>
+
+                    <!-- Categories -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("InventoryManager") || User.IsInRole("Technician"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Categories">
+                                <i class="fa-regular fa-folder-open"></i>
+                                <span>Categories</span>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Services -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Services">
+                            <i class="fa-solid fa-hospital"></i>
+                            <span>Services</span>
+                        </a>
+                    </li>
+
+                    <!-- Service Groups -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("InventoryManager"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/ServiceGroups">
+                                <i class="fa-solid fa-folder-tree"></i>
+                                <span>Groups</span>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Maintenance -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("Technician"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="WorkOrders" asp-action="Index">
+                                <i class="fa fa-wrench"></i>
+                                <span>Maintenance</span>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Locations -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("InventoryManager"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Locations" asp-action="Index">
+                                <i class="fa fa-map-marker-alt"></i>
+                                <span>Locations</span>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Admin Features -->
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Users">
+                                <i class="fa-solid fa-users"></i>
+                                <span>Users</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Users/ManageRoles">
+                                <i class="fa-solid fa-user-gear"></i>
+                                <span>Roles</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/LogList">
+                                <i class="fa-solid fa-scroll"></i>
+                                <span>Logs</span>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- User Profile -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Users" asp-action="Profile">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+
+                    <!-- Logout -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="Logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
                     </li>
                 </ul>
-            </div>
-        </nav>
-    </aside>
+            </nav>
+        </aside>
 
-    <div id="right-panel" class="right-panel">
-        <header id="header" class="header">
-            <div class="header-menu">
-                <div class="col-sm-7">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- HEADER -->
+            <header class="header">
+                <div class="header-content">
                     <div class="header-left">
-                        <button class="search-trigger"><i class="fa fa-search"></i></button>
-                        <div class="form-inline">
-                            <form class="search-form">
-                                <input class="form-control mr-sm-2" type="text" placeholder="Search ..." aria-label="Search">
-                                <button class="search-close" type="submit"><i class="fa fa-close"></i></button>
-                            </form>
+                        <button class="btn btn-outline-secondary">
+                            <i class="fa fa-search me-2"></i> Search
+                        </button>
+                    </div>
+                    <div class="header-right">
+                        <div class="user-area dropdown">
+                            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img class="user-avatar rounded-circle" src="/images/admin.jpg" alt="User Avatar">
+                                <div class="user-info ms-2">
+                                    <strong>@User.Identity.Name</strong>
+                                    <br>
+                                    <small class="text-muted">@string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value))</small>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end shadow-lg">
+                                <a class="dropdown-item" href="/Users/Profile">
+                                    <i class="fa fa-user me-2"></i> My Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fa fa-cog me-2"></i> Settings
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-danger" asp-controller="Admin" asp-action="Logout">
+                                    <i class="fa fa-power-off me-2"></i> Logout
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-5">
-                    <div class="user-area dropdown float-right">
-                        <a href="/Users" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img class="user-avatar rounded-circle" src="/images/admin.jpg" alt="User Avatar">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </header>
+            </header>
 
-        @RenderBody()
+            <!-- CONTENT AREA -->
+            <main class="content-area">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/all.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/jquery.datatables.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.createElement('button');
+            menuToggle.className = 'btn btn-primary d-md-none position-fixed';
+            menuToggle.style.cssText = 'top: 15px; left: 15px; z-index: 1001;';
+            menuToggle.innerHTML = '<i class="fa fa-bars"></i>';
+            menuToggle.onclick = function () {
+                document.querySelector('.sidebar').classList.toggle('active');
+            };
+            document.body.appendChild(menuToggle);
+        });
+
+        // Adjust content padding on resize
+        function adjustContentPadding() {
+            const header = document.querySelector('.header');
+            const content = document.querySelector('.content-area');
+            if (header && content) {
+                content.style.paddingTop = (header.offsetHeight + 20) + 'px';
+            }
+        }
+
+        window.addEventListener('resize', adjustContentPadding);
+        document.addEventListener('DOMContentLoaded', adjustContentPadding);
+    </script>
 </body>
 </html>

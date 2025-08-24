@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvWebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Technician")]
     public class WorkOrdersController : Controller
     {
         private readonly AppDbContext _db;
